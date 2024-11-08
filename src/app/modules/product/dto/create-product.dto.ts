@@ -7,9 +7,8 @@ export class CreateProductDto {
   @IsString()
   name: string;
 
-  @IsOptional()
   @IsString()
-  description?: string;
+  description: string;
 
   @IsNotEmpty()
   @IsNumber()
