@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Prisma, Product } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetProductsQueryDto } from './dto/get-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -12,16 +13,32 @@ export class ProductService {
     return await this.prisma.product.create({ data });
   }
 
-  findAll() {
-    return `This action returns all product`;
+  async getAllProducts(query: GetProductsQueryDto): Promise<Product[]> {
+    const { page, limit, sort, order, category } = query;
+
+    return this.prisma.product.findMany({
+      skip: (page - 1) * limit,
+      take: limit,
+      where: category ? { category } : {},
+      orderBy: { [sort]: order },
+    });
   }
 
   findOne(id: number) {
     return `This action returns a #${id} product`;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: number, data: UpdateProductDto): Promise<Product> {
+    const existingProduct = await this.findOne(id);
+
+    if (!existingProduct) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+
+    return await this.prisma.product.update({
+      where: { id },
+      data,
+    });
   }
 
   remove(id: number) {
