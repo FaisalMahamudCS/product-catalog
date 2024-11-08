@@ -26,5 +26,6 @@ module.exports = {
         '@typescript-eslint/prefer-nullish-coalescing': 'off',
         '@typescript-eslint/no-unsafe-assignment': 'off',
         '@typescript-eslint/no-unused-vars': 'off',
+        '@typescript-eslint/no-unsalfe-call': 'off',
   },
 };
