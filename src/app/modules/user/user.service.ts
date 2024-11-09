@@ -1,15 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Body, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
+import { LoginDto } from '../auth/dto/login.dto';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService,
-    private userService: UserService,
-    private jwtService: JwtService,
   ) {}
 
   create(createUserDto: CreateUserDto) {
@@ -53,15 +54,12 @@ export class UserService {
       where: { email },
     });
   }
-  async validateUser(email: string, password: string) {
-    return this.userService.validateUser(email, password);
-  }
 
-  async login(user: User) {
-    const payload = { email: user.email, sub: user.id, role: user.role };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+  async validateUser(email: string, password: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (user && await bcrypt.compare(password, user.password)) {
+      return user; 
+    }
+    return null; 
   }
-
 }
