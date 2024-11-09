@@ -3,9 +3,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
+
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService,
+    private userService: UserService,
+    private jwtService: JwtService,
+  ) {}
 
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
@@ -48,4 +53,15 @@ export class UserService {
       where: { email },
     });
   }
+  async validateUser(email: string, password: string) {
+    return this.userService.validateUser(email, password);
+  }
+
+  async login(user: User) {
+    const payload = { email: user.email, sub: user.id, role: user.role };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
+
 }
