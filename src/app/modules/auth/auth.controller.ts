@@ -3,10 +3,14 @@ import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { LoginDto } from './dto/login.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UserService } from '../user/user.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService,
+    private readonly userService: UserService
+  ) {}
 
   @Post()
   create(@Body() createAuthDto: CreateAuthDto) {
@@ -40,4 +44,11 @@ export class AuthController {
     }
     return this.authService.login(user); // Return JWT token
   }
+
+   // Registration endpoint with role handling
+   @Post('register')
+   async register(@Body() createUserDto: CreateUserDto) {
+     // Only admin can assign "admin" role; non-admin users get "user" role
+     return this.userService.createUser(createUserDto);
+   }
 }

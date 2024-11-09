@@ -12,7 +12,7 @@ import { PassportModule } from '@nestjs/passport';
 @Module({
   imports: [
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'secretKey',
+      secret: process.env.JWT_SECRET ||'key',
       signOptions: { expiresIn: '1h' },
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }),  // Ensure PassportModule is registered with 'jwt'
@@ -20,12 +20,22 @@ import { PassportModule } from '@nestjs/passport';
   ],
   
   controllers: [AuthController],
-  providers: [AuthService,UserService,JwtService,JwtStrategy,
+  providers: [AuthService,UserService,JwtStrategy,
+   
         {
-    provide: APP_GUARD,
+    provide: 'AUTH_SERVICE',
     useClass: RolesGuard,
   },
+  {
+    provide: 'AUTH_SERVICE',
+    useClass: JwtAuthGuard,
+  },
+  
+ 
 ],
+
+
+exports: [AuthService, PassportModule], // Export PassportModule if other modules need it
 
 })
 export class AuthModule {}

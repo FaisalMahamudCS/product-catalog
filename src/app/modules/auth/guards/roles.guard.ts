@@ -14,12 +14,18 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+    console.log('user',request.user)
+    console.log(requiredRoles)
     if (!requiredRoles) {
       return true; // Public route if no roles are specified
     }
 
     // Extract user from request
-    const { user } = context.switchToHttp().getRequest();
+
+    console.log('user',request)
+        console.log('usr',user)
     if (!user || !user.role) {
       return false; // Access denied if no user or role is defined
     }

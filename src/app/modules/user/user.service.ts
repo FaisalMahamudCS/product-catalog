@@ -33,12 +33,11 @@ export class UserService {
     return `This action removes a #${id} user`;
   }
 
-  async createUser(createUserDto: CreateUserDto, isAdminRequest: boolean = false) {
+  async createUser(createUserDto: CreateUserDto) {
     const { email, password, role } = createUserDto;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Only allow "admin" role assignment if the request is from an existing admin
-    const finalRole = isAdminRequest && role === 'admin' ? 'admin' : 'user';
+    const finalRole = 'admin' ;
 
     return this.prisma.user.create({
       data: {
