@@ -3,19 +3,12 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../../../../common/decorators/roles.decorator';
 import { Role } from '../../../../common/enums/role.enum';
-import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Injectable()
-export class RolesGuard extends JwtAuthGuard implements CanActivate {
-  constructor(private reflector: Reflector) {
-    super();
-  }
+export class RolesGuard implements CanActivate {
+  constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    // Run JwtAuthGuard to ensure the user is authenticated
-    const isAuthenticated = super.canActivate(context);
-    if (!isAuthenticated) return false;
-
     // Get required roles from metadata
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
@@ -25,8 +18,12 @@ export class RolesGuard extends JwtAuthGuard implements CanActivate {
       return true; // Public route if no roles are specified
     }
 
-    // Extract user roles from the request
+    // Extract user from request
     const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.includes(user.role);
+    if (!user || !user.role) {
+      return false; // Access denied if no user or role is defined
+    }
+
+    return requiredRoles.includes(user.role); // Check if user has a required role
   }
 }
