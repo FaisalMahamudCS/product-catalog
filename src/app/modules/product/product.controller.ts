@@ -5,8 +5,8 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { GetProductsQueryDto } from './dto/get-product.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enums/role.enum';
+import { Roles } from '../../../common/decorators/roles.decorator';
+import { Role } from '../../../../src/common/enums/role.enum';
 
 @Controller('products')
 export class ProductController {

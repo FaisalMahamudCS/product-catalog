@@ -22,10 +22,10 @@ import { PassportModule } from '@nestjs/passport';
   controllers: [AuthController],
   providers: [AuthService,UserService,JwtStrategy,
    
-        {
-    provide: 'AUTH_SERVICE',
-    useClass: RolesGuard,
-  },
+    {
+      provide: 'AUTH_SERVICE',
+      useClass: RolesGuard,
+    },
   {
     provide: 'AUTH_SERVICE',
     useClass: JwtAuthGuard,
